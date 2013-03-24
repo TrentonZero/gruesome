@@ -2,6 +2,8 @@ require 'sinatra'
 require 'mongo' 
 require 'uri'
 
+$log = ""
+
 get '/' do
   response =  "<p>Welcome to herokuGruesome.</p>"
   response += "<form name=\"input\" action=\"/\" method=\"post\">"
@@ -19,14 +21,19 @@ post '/' do
   response = "<p>"
   output_collection = db.collection('gameOutput')
 
-  output_collection.find("gamekey" => key, :sort => "seq").each { |doc| 
+  output_collection.find("gamekey" => key, :sort => "sequence").each { |doc| 
     response += doc["line"]
   }
+  
+  output_collection.remove()
+  
   response = response.gsub("\n", "<br \>\n")
   response = response.gsub(" ", "&nbsp;")
   response += "</p>\n"
- 
-  response
+
+  $log += reponse 
+   
+  $log
   
 end
 
