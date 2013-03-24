@@ -31,7 +31,7 @@ post '/' do
   response = response.gsub(" ", "&nbsp;")
   response += "</p>\n"
 
-  $log += reponse 
+  $log += response 
    
   $log
   
