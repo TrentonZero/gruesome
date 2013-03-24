@@ -314,7 +314,7 @@ module Gruesome
           line = ""
 
           input_collection = $db.collection('gameInput')
-          docs = input_collection.find("gamekey" => key).sort([["sequence", :desc]])
+          docs = input_collection.find("gamekey" => $gamekey).sort([["sequence", :desc]])
 
           if docs.size >= 1
             doc = docs[0]
