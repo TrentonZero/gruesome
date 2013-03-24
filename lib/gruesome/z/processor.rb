@@ -205,7 +205,7 @@ module Gruesome
           puts  
           $stdout.flush
           s = $stdout.string
-          $seq++
+          $seq += 1
             
           if (s.length > 1)
             output_collection = $db.collection('gameOutput')
