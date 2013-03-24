@@ -309,14 +309,14 @@ module Gruesome
           addr = operands[0] + 1
 
           # read in a line of input from stdin
-          #line = $stdin.readline[0..-2]
+          # line = $stdin.readline[0..-2]
 
           line = ""
           while line.length == 0
             input_collection = $db.collection('gameInput')
             docs = input_collection.find("gamekey" => key).sort([["sequence", :desc]])
 
-            if (docs.size >= 1)
+            if docs.size >= 1
               doc = docs[0]
 
               line = doc["line"]
