@@ -3,10 +3,11 @@ require 'mongo'
 require 'uri'
 
 get '/' do
-  puts "<p>Hello, world. This is KJW.</p>"
-  puts "<form name=\"input\" action=\"/\" method=\"post\">"
-  puts "<input type=\"submit\" value=\"Submit\">"
-  puts "</form>"
+  s =  "<p>Hello, world. This is KJW.</p>"
+  s += "<form name=\"input\" action=\"/\" method=\"post\">"
+  s += "<input type=\"submit\" value=\"Submit\">"
+  s += "</form>"
+  s
 end
 
 post '/' do
