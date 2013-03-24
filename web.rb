@@ -7,7 +7,7 @@ get '/' do
   s += "<form name=\"input\" action=\"/\" method=\"post\">"
   s += "<input type=\"submit\" value=\"Submit\">"
   s += "</form>"
-  puts s
+  s
 end
 
 post '/' do
