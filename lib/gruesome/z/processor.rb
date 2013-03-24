@@ -210,7 +210,7 @@ module Gruesome
             output_collection = $db.collection('gameOutput')
             l = { "line" =>  s}
             output_collection.save(l)
-            $stdout.clear
+            $stdout = StringIO.new
           end
           
         when Opcode::POP

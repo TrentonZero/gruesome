@@ -13,11 +13,13 @@ end
 post '/' do
   db = get_connection
   
-  response =  "<p>Collections</p>"
-  response += "<p>===========</p>"
-  db.collection_names.each do |n|
-    response+= "<p>" + n + "</p>"
-  end
+  response = ""
+  output_collection = $db.collection('gameOutput')
+
+  output_collection.find().each { |doc| 
+    response += doc
+  }
+ 
   response
   
 end
