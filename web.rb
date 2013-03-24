@@ -17,7 +17,7 @@ post '/' do
   output_collection = db.collection('gameOutput')
 
   output_collection.find().each { |doc| 
-    response += doc
+    response += doc["line"]
   }
  
   response
