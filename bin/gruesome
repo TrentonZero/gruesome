@@ -5,5 +5,8 @@ $: << File.dirname(__FILE__) + 'lib'
 require 'gruesome'
 require 'gruesome/cli'
 
+$stdout.reopen("./tmp/out.txt", "w")
+$stderr.reopen("./tmp/err.txt", "w")
+
 Gruesome::CLI.run
 
