@@ -76,7 +76,7 @@ module Gruesome
             routine_return(1)
           else
             @memory.program_counter = branch_to
-#            @memory.program_counter -= 2
+            #            @memory.program_counter -= 2
           end
         end
       end
@@ -103,7 +103,7 @@ module Gruesome
             @memory.writev(instruction.destination, operands[0] << places)
           end
         when Opcode::CALL, Opcode::CALL_1N, Opcode::CALL_VS, Opcode::CALL_VN, Opcode::CALL_VN2,
-             Opcode::CALL_2S, Opcode::CALL_1S, Opcode::CALL_2N
+        Opcode::CALL_2S, Opcode::CALL_1S, Opcode::CALL_2N
           routine_call(@memory.packed_address_to_byte_address(operands[0]), operands[1..-1], instruction.destination)
         when Opcode::CHECK_ARG_COUNT
           result = @memory.num_arguments == operands[0]
@@ -202,10 +202,10 @@ module Gruesome
           end
         when Opcode::NOP
         when Opcode::NEW_LINE
-          puts  
+          puts
           $stdout.flush
           s = $stdout.string
-            
+
           if (s.length > 1)
             $seq += 1
             output_collection = $db.collection('gameOutput')
@@ -213,7 +213,7 @@ module Gruesome
             output_collection.save(l)
             $stdout = StringIO.new
           end
-          
+
         when Opcode::POP
           # get rid of the first item on stack
           @memory.readv(0)
@@ -312,82 +312,80 @@ module Gruesome
           # line = $stdin.readline[0..-2]
 
           line = ""
-          while line.length == 0
-            input_collection = $db.collection('gameInput')
-            docs = input_collection.find("gamekey" => key).sort([["sequence", :desc]])
 
-            if docs.size >= 1
-              doc = docs[0]
+          input_collection = $db.collection('gameInput')
+          docs = input_collection.find("gamekey" => key).sort([["sequence", :desc]])
 
-              line = doc["line"]
-            else
-              sleep 1.0
+          if docs.size >= 1
+            doc = docs[0]
+
+            line = doc["line"]
+
+            input_collection.remove()  
+              
+            # truncate line to fit the max characters given by text-buffer
+            if line.length > max_bytes
+              line = line[0..max_bytes]
             end
-          end
 
-          
-          # truncate line to fit the max characters given by text-buffer
-          if line.length > max_bytes
-            line = line[0..max_bytes]
-          end
+            # tokenize
+            lexed = @dictionary.tokenize(line)
 
-          # tokenize
-          lexed = @dictionary.tokenize(line)
+            # parse
+            parsed = @dictionary.parse(lexed)
 
-          # parse
-          parsed = @dictionary.parse(lexed)
+            # encode the line into a ZChar stream
+            str = ZSCII.encode_to_zchars(line, @header.version)
 
-          # encode the line into a ZChar stream
-          str = ZSCII.encode_to_zchars(line, @header.version)
-
-          # write the text to the text-buffer
-          num_bytes = 1
-          first_position = 1
-          if @header.version >= 5
-            num_bytes += 1
-            @memory.force_writeb(addr, line.length)
-            first_position = 2
-            addr += 1
-          end
-
-          str.each do |zchr|
-            num_bytes += 1
-            if num_bytes > max_bytes
-              break
+            # write the text to the text-buffer
+            num_bytes = 1
+            first_position = 1
+            if @header.version >= 5
+              num_bytes += 1
+              @memory.force_writeb(addr, line.length)
+              first_position = 2
+              addr += 1
             end
-            @memory.force_writeb(addr, zchr)
-            addr += 1
-          end
 
-          if @header.version < 5
-            # terminator
+            str.each do |zchr|
+              num_bytes += 1
+              if num_bytes > max_bytes
+                break
+              end
+              @memory.force_writeb(addr, zchr)
+              addr += 1
+            end
+
+            if @header.version < 5
+              # terminator
+              if num_bytes <= max_bytes
+                @memory.force_writeb(addr, 0)
+              end
+            end
+
+            # write the parse-buffer
+            max_bytes = @memory.force_readb(operands[1])
+            max_bytes = 2 + max_bytes * 4
+            addr = operands[1] + 1
+            num_bytes = 1
+
             if num_bytes <= max_bytes
-              @memory.force_writeb(addr, 0)
+              @memory.force_writeb(addr, lexed.length)
+              addr += 1
             end
-          end
 
-          # write the parse-buffer
-          max_bytes = @memory.force_readb(operands[1])
-          max_bytes = 2 + max_bytes * 4
-          addr = operands[1] + 1
-          num_bytes = 1
-
-          if num_bytes <= max_bytes
-            @memory.force_writeb(addr, lexed.length)
-            addr += 1
-          end
-
-          parsed.each do |token, index|
-            num_bytes += 4
-            if num_bytes > max_bytes
-              break
+            parsed.each do |token, index|
+              num_bytes += 4
+              if num_bytes > max_bytes
+                break
+              end
+              @memory.force_writew(addr, token[:address])
+              addr += 2
+              @memory.force_writeb(addr, token[:size])
+              addr += 1
+              @memory.force_writeb(addr, token[:position]+first_position)
+              addr += 1
             end
-            @memory.force_writew(addr, token[:address])
-            addr += 2
-            @memory.force_writeb(addr, token[:size])
-            addr += 1
-            @memory.force_writeb(addr, token[:position]+first_position)
-            addr += 1
           end
         when Opcode::TEST
           result = (operands[0] & operands[1]) == operands[1]
@@ -397,13 +395,13 @@ module Gruesome
           branch(instruction.branch_to, instruction.branch_on, result)
         when Opcode::ADD
           @memory.writev(instruction.destination,
-            unsigned_to_signed(operands[0]) + unsigned_to_signed(operands[1]))
+          unsigned_to_signed(operands[0]) + unsigned_to_signed(operands[1]))
         when Opcode::SUB
           @memory.writev(instruction.destination,
-            unsigned_to_signed(operands[0]) - unsigned_to_signed(operands[1]))
+          unsigned_to_signed(operands[0]) - unsigned_to_signed(operands[1]))
         when Opcode::MUL
           @memory.writev(instruction.destination,
-            unsigned_to_signed(operands[0]) * unsigned_to_signed(operands[1]))
+          unsigned_to_signed(operands[0]) * unsigned_to_signed(operands[1]))
         when Opcode::DIV
           result = unsigned_to_signed(operands[0]).to_f / unsigned_to_signed(operands[1]).to_f
           if result < 0
@@ -416,7 +414,7 @@ module Gruesome
           a = unsigned_to_signed(operands[0])
           b = unsigned_to_signed(operands[1])
           result = a.abs % b.abs
-          if a < 0 
+          if a < 0
             result = -result
           end
           @memory.writev(instruction.destination, result.to_i)
