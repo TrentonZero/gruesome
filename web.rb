@@ -14,7 +14,7 @@ post '/' do
   db = get_connection
   
   response = ""
-  output_collection = $db.collection('gameOutput')
+  output_collection = db.collection('gameOutput')
 
   output_collection.find().each { |doc| 
     response += doc
