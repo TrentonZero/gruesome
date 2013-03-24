@@ -3,20 +3,23 @@ require 'mongo'
 require 'uri'
 
 get '/' do
-  s =  "<p>Hello, world. This is KJW.</p>"
-  s += "<form name=\"input\" action=\"/\" method=\"post\">"
-  s += "<input type=\"submit\" value=\"Submit\">"
-  s += "</form>"
-  s
+  response =  "<p>Hello, world. This is KJW.</p>"
+  response += "<form name=\"input\" action=\"/\" method=\"post\">"
+  response += "<input type=\"submit\" value=\"Submit\">"
+  response += "</form>"
+  response
 end
 
 post '/' do
   db = get_connection
   
-  puts "Collections"
-  puts "==========="
-  collections = db.collection_names
-  collections
+  response =  "<p>Collections</p>"
+  response += "<p>===========</p>"
+  db.collection_names.each do |n|
+    response+= "<p>" + n + "</p>"
+  end
+  response
+  
 end
 
 def get_connection
