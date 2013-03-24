@@ -3,6 +3,7 @@ require 'mongo'
 require 'uri'
 
 $log = ""
+$seq = 0
 
 get '/' do
   response =  "<p>Welcome to herokuGruesome.</p>"
@@ -11,6 +12,16 @@ get '/' do
   response += "<input type=\"submit\" value=\"Submit\">"
   response += "</form>"
   response
+end
+
+get '/getInput' do
+  response =  "<p>Welcome to herokuGruesome.</p>"
+    response += "<form name=\"input\" action=\"/command\" method=\"post\">"
+    response += "Game Key: <input type=\"text\" name=\"gamekey\">"
+    response += "Input: <input type=\"text\" name=\"input\">"
+    response += "<input type=\"submit\" value=\"Submit\">"
+    response += "</form>"
+    response
 end
 
 post '/' do
@@ -35,6 +46,26 @@ post '/' do
   $log += response 
    
   $log
+  
+end
+
+
+post '/command' do
+  db = get_connection
+  key = request.POST["gamekey"]
+  input = request.POST["input"]    
+    
+  input_collection = db.collection('gameInput')
+  l = { "line" => input, "sequence" => $seq, "gamekey" => key }
+  input_collection.save(l)
+    
+  response =  "<p>Welcome to herokuGruesome.</p>"
+    response += "<form name=\"input\" action=\"/command\" method=\"post\">"
+    response += "Game Key: <input type=\"text\" name=\"gamekey\">"
+    response += "Input: <input type=\"text\" name=\"input\">"
+    response += "<input type=\"submit\" value=\"Submit\">"
+    response += "</form>"
+    response
   
 end
 
