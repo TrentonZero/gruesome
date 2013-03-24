@@ -203,6 +203,16 @@ module Gruesome
         when Opcode::NOP
         when Opcode::NEW_LINE
           puts  
+          $stdout.flush
+          s = $stdout.string
+          
+          if (s.length > 1)
+            output_collection = @db_connection.collection('gameOutput')
+            l = { line =>  s}
+            output_collection.save(l)
+            $stdout.clear
+          end
+          
         when Opcode::POP
           # get rid of the first item on stack
           @memory.readv(0)

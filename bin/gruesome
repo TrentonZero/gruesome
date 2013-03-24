@@ -4,9 +4,23 @@ $: << File.dirname(__FILE__) + 'lib'
 
 require 'gruesome'
 require 'gruesome/cli'
+require 'stringio'
+require 'mongo' 
+require 'uri'
 
-$stdout.reopen("./tmp/out.txt", "w")
-$stderr.reopen("./tmp/err.txt", "w")
+def get_connection
+  return @db_connection if @db_connection
+  db = URI.parse(ENV['MONGOHQ_URL'])
+  db_name = db.path.gsub(/^\//, '')
+  @db_connection = Mongo::Connection.new(db.host, db.port).db(db_name)
+  @db_connection.authenticate(db.user, db.password) unless (db.user.nil? || db.user.nil?)
+  @db_connection
+end
+
+
+$stdout = StringIO.new
+
+db = get_connection
 
 Gruesome::CLI.run
 
