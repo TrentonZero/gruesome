@@ -20,7 +20,7 @@ end
 
 $stdout = StringIO.new
 
-db = get_connection
+$db = get_connection
 
 Gruesome::CLI.run
 
