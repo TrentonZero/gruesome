@@ -13,10 +13,12 @@
   ▀▀▀▀▀▀    ▀▀▀   ▀▀▀   ▀▀▀▀▀     ▀▀▀▀▀▀   ▀▀▀▀▀     ▀▀▀▀▀   ▀▀▀   ▀▀▀   ▀▀▀▀▀▀
 </pre>
 
-# Gruesome
+# HerokuGruesome
 
 The Ruby Z-Code Emulator and IF Manager (Currently in progress). It currently can
 play version 3 games such as the ZORK trilogy.
+
+TrentonZero fork is designed to work over a web client via Heroku. 
 
 ## Currently implemented
 
