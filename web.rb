@@ -13,12 +13,14 @@ end
 post '/' do
   db = get_connection
   
-  response = ""
+  response = "<p>"
   output_collection = db.collection('gameOutput')
 
   output_collection.find().each { |doc| 
     response += doc["line"]
   }
+  response = response.gsub('\n', '</p><p>')
+  response += "</p>"
  
   response
   
