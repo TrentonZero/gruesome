@@ -16,7 +16,7 @@ post '/' do
   puts "Collections"
   puts "==========="
   collections = db.collection_names
-  puts collections
+  collections
 end
 
 def get_connection
