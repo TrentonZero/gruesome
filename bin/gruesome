@@ -17,14 +17,16 @@ def get_connection
   @db_connection
 end
 
-
-$stdout = StringIO.new
-$seq = 0
-
 # a game key that identifies this game.
 $gamekey = (0...8).map{(65+rand(26)).chr}.join
 
+# write the gamekey to console for our convienence
 puts "Game key: " + $gamekey
+
+# reroute stdout to a stringio.
+$stdout = StringIO.new
+$seq = 0
+
 
 $db = get_connection
 
