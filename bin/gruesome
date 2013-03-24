@@ -23,6 +23,9 @@ $seq = 0
 
 # a game key that identifies this game.
 $gamekey = (0...8).map{(65+rand(26)).chr}.join
+
+puts "Game key: " + $gamekey
+
 $db = get_connection
 
 
