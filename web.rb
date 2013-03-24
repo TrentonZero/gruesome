@@ -61,7 +61,7 @@ post '/command' do
     
   response =  "<p>Welcome to herokuGruesome.</p>"
     response += "<form name=\"input\" action=\"/command\" method=\"post\">"
-    response += "Game Key: <input type=\"text\" name=\"gamekey\">"
+    response += "Game Key: <input type=\"text\" name=\"gamekey\" value=\"" + key +"\">"
     response += "Input: <input type=\"text\" name=\"input\">"
     response += "<input type=\"submit\" value=\"Submit\">"
     response += "</form>"
