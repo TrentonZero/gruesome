@@ -27,8 +27,9 @@ post '/' do
   
   output_collection.remove()
   
-  response = response.gsub("\n", "<br \>\n")
   response = response.gsub(" ", "&nbsp;")
+  response = response.gsub("\n", "<br \>\n")
+  
   response += "</p>\n"
 
   $log += response 
