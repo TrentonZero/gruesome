@@ -19,8 +19,8 @@ post '/' do
   output_collection.find().each { |doc| 
     response += doc["line"]
   }
-  response = response.gsub('\n', '</p><p>')
-  response += "</p>"
+  response = response.gsub("\n", "</p>\n<p>")
+  response += "</p>\n"
  
   response
   
