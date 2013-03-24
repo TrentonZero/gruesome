@@ -5,7 +5,7 @@ require 'uri'
 get '/' do
   response =  "<p>Welcome to herokuGruesome.</p>"
   response += "<form name=\"input\" action=\"/\" method=\"post\">"
-  reponse += "Game Key: <input type=\"text\" name=\"gamekey\">"
+  response += "Game Key: <input type=\"text\" name=\"gamekey\">"
   response += "<input type=\"submit\" value=\"Submit\">"
   response += "</form>"
   response
