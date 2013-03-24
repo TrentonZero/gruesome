@@ -3,8 +3,9 @@ require 'mongo'
 require 'uri'
 
 get '/' do
-  response =  "<p>Hello, world. This is KJW.</p>"
+  response =  "<p>Welcome to herokuGruesome.</p>"
   response += "<form name=\"input\" action=\"/\" method=\"post\">"
+  reponse += "Game Key: <input type=\"text\" name=\"gamekey\">"
   response += "<input type=\"submit\" value=\"Submit\">"
   response += "</form>"
   response
@@ -13,13 +14,16 @@ end
 post '/' do
   db = get_connection
   
+  key = request.POST["gamekey"]
+  
   response = "<p>"
   output_collection = db.collection('gameOutput')
 
-  output_collection.find().each { |doc| 
+  output_collection.find("gamekey" >= key, :sort => "seq").each { |doc| 
     response += doc["line"]
   }
-  response = response.gsub("\n", "</p>\n<p>")
+  response = response.gsub("\n", "<br \>\n")
+  response = response.gsbu(" ", "&nbsp;")
   response += "</p>\n"
  
   response

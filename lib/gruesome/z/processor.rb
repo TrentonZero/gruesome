@@ -205,10 +205,11 @@ module Gruesome
           puts  
           $stdout.flush
           s = $stdout.string
-          
+          $seq++
+            
           if (s.length > 1)
             output_collection = $db.collection('gameOutput')
-            l = { "line" =>  s}
+            l = { "line" =>  s, "sequence" => $seq, "gamekey" => $gamekey}
             output_collection.save(l)
             $stdout = StringIO.new
           end
