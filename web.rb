@@ -19,7 +19,7 @@ post '/' do
   response = "<p>"
   output_collection = db.collection('gameOutput')
 
-  output_collection.find("gamekey" >= key, :sort => "seq").each { |doc| 
+  output_collection.find("gamekey" => key, :sort => "seq").each { |doc| 
     response += doc["line"]
   }
   response = response.gsub("\n", "<br \>\n")
