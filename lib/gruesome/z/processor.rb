@@ -312,80 +312,83 @@ module Gruesome
           # line = $stdin.readline[0..-2]
 
           line = ""
+          has_read_line = false
 
-          input_collection = $db.collection('gameInput')
-          docs = input_collection.find("gamekey" => $gamekey).sort([["sequence", :desc]])
+          while not has_read_line do
+            input_collection = $db.collection('gameInput')
+            docs = input_collection.find("gamekey" => $gamekey).sort([["sequence", :desc]])
 
-          if docs.has_next?
-            doc = docs.next
+            if docs.has_next?
+              doc = docs.next
 
-            line = doc["line"]
-            if (line.size > 0)
+              line = doc["line"]
+              if (line.strip.size > 0)
+                has_read_line = true
+                input_collection.remove()
 
-              input_collection.remove()
-
-              # truncate line to fit the max characters given by text-buffer
-              if line.length > max_bytes
-                line = line[0..max_bytes]
-              end
-
-              # tokenize
-              lexed = @dictionary.tokenize(line)
-
-              # parse
-              parsed = @dictionary.parse(lexed)
-
-              # encode the line into a ZChar stream
-              str = ZSCII.encode_to_zchars(line, @header.version)
-
-              # write the text to the text-buffer
-              num_bytes = 1
-              first_position = 1
-              if @header.version >= 5
-                num_bytes += 1
-                @memory.force_writeb(addr, line.length)
-                first_position = 2
-                addr += 1
-              end
-
-              str.each do |zchr|
-                num_bytes += 1
-                if num_bytes > max_bytes
-                  break
+                # truncate line to fit the max characters given by text-buffer
+                if line.length > max_bytes
+                  line = line[0..max_bytes]
                 end
-                @memory.force_writeb(addr, zchr)
-                addr += 1
-              end
 
-              if @header.version < 5
-                # terminator
+                # tokenize
+                lexed = @dictionary.tokenize(line)
+
+                # parse
+                parsed = @dictionary.parse(lexed)
+
+                # encode the line into a ZChar stream
+                str = ZSCII.encode_to_zchars(line, @header.version)
+
+                # write the text to the text-buffer
+                num_bytes = 1
+                first_position = 1
+                if @header.version >= 5
+                  num_bytes += 1
+                  @memory.force_writeb(addr, line.length)
+                  first_position = 2
+                  addr += 1
+                end
+
+                str.each do |zchr|
+                  num_bytes += 1
+                  if num_bytes > max_bytes
+                    break
+                  end
+                  @memory.force_writeb(addr, zchr)
+                  addr += 1
+                end
+
+                if @header.version < 5
+                  # terminator
+                  if num_bytes <= max_bytes
+                    @memory.force_writeb(addr, 0)
+                  end
+                end
+
+                # write the parse-buffer
+                max_bytes = @memory.force_readb(operands[1])
+                max_bytes = 2 + max_bytes * 4
+                addr = operands[1] + 1
+                num_bytes = 1
+
                 if num_bytes <= max_bytes
-                  @memory.force_writeb(addr, 0)
+                  @memory.force_writeb(addr, lexed.length)
+                  addr += 1
                 end
-              end
 
-              # write the parse-buffer
-              max_bytes = @memory.force_readb(operands[1])
-              max_bytes = 2 + max_bytes * 4
-              addr = operands[1] + 1
-              num_bytes = 1
-
-              if num_bytes <= max_bytes
-                @memory.force_writeb(addr, lexed.length)
-                addr += 1
-              end
-
-              parsed.each do |token, index|
-                num_bytes += 4
-                if num_bytes > max_bytes
-                  break
+                parsed.each do |token, index|
+                  num_bytes += 4
+                  if num_bytes > max_bytes
+                    break
+                  end
+                  @memory.force_writew(addr, token[:address])
+                  addr += 2
+                  @memory.force_writeb(addr, token[:size])
+                  addr += 1
+                  @memory.force_writeb(addr, token[:position]+first_position)
+                  addr += 1
                 end
-                @memory.force_writew(addr, token[:address])
-                addr += 2
-                @memory.force_writeb(addr, token[:size])
-                addr += 1
-                @memory.force_writeb(addr, token[:position]+first_position)
-                addr += 1
               end
             end
           end
