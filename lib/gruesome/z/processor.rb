@@ -208,7 +208,7 @@ module Gruesome
           
           if (s.length > 1)
             output_collection = $db.collection('gameOutput')
-            l = { line =>  s}
+            l = { "line" =>  s}
             output_collection.save(l)
             $stdout.clear
           end
