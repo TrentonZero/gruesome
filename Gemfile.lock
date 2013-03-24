@@ -40,7 +40,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  bson_ext
+  bson_ext (= 1.8.3)
   gruesome!
   mongo (= 1.8.3)
   rspec
