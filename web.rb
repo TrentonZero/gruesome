@@ -23,7 +23,7 @@ post '/' do
     response += doc["line"]
   }
   response = response.gsub("\n", "<br \>\n")
-  response = response.gsbu(" ", "&nbsp;")
+  response = response.gsub(" ", "&nbsp;")
   response += "</p>\n"
  
   response
